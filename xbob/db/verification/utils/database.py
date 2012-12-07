@@ -113,9 +113,9 @@ class Database(object):
     """
     if not parameters:
       # parameters are not specified, i.e., 'None' or empty lists
-      parameters = default_parameters if default_parameters else valid_parameters
+      parameters = default_parameters if default_parameters is not None else valid_parameters
 
-    if not isinstance(parameters, (list, tuple)):
+    if not isinstance(parameters, (list, tuple, set)):
       # parameter is just a single element, not a tuple or list -> transform it into a tuple
       parameters = (parameters,)
 
@@ -152,14 +152,14 @@ class Database(object):
     """
     if not parameter:
       # parameter not specified ...
-      if default_parameter:
+      if default_parameter is not None:
         # ... -> use default parameter
         parameter = default_parameter
       else:
         # ... -> raise an exception
         raise ValueError, "The %s has to be one of %s, it might not be 'None'." % (parameter_description, valid_parameters)
 
-    if isinstance(parameter, (list, tuple)):
+    if isinstance(parameter, (list, tuple, set)):
       # the parameter is in a list/tuple ...
       if len(parameter) > 1:
         raise ValueError, "The %s has to be one of %s, it might not be more than one (%s was given)." % (parameter_description, valid_parameters, parameter)
