@@ -191,12 +191,18 @@ class SQLiteDatabase(Database):
     # call base class constructor
     Database.__init__(self)
 
+  def __del__(self):
+    """Closes the connection to the database when it is not needed any more."""
+    if self.is_valid():
+      # do some magic to close the connection to the database file
+      self.m_session.bind.dispose()
+
   def is_valid(self):
-    """Returns if a valid session has been opened for reading the database"""
+    """Returns if a valid session has been opened for reading the database."""
     return self.m_session is not None
 
   def assert_validity(self):
-    """Raise a RuntimeError if the database back-end is not available"""
+    """Raise a RuntimeError if the database back-end is not available."""
     if not self.is_valid():
       raise RuntimeError, "Database of type 'sqlite' cannot be found at expected location '%s'." % sqlite_file
 
