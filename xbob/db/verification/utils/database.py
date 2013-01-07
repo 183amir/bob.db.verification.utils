@@ -195,7 +195,13 @@ class SQLiteDatabase(Database):
     """Closes the connection to the database when it is not needed any more."""
     if self.is_valid():
       # do some magic to close the connection to the database file
-      self.m_session.bind.dispose()
+      try:
+        # Since the dispose function re-creates a pool 
+        #   which might fail in some conditions, e.g., when this destructor is called during the exit of the python interpreter
+        self.m_session.bind.dispose()
+      except TypeError:
+        # ... I can just ignore the according exception...
+        pass
 
   def is_valid(self):
     """Returns if a valid session has been opened for reading the database."""
