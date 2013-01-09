@@ -28,7 +28,7 @@ setup(
     # This is the basic information about your project. Modify all this
     # information before releasing code publicly.
     name='xbob.db.verification.utils',
-    version='0.1.3',
+    version='0.1.4',
     description='Utilities for xbob.db verification databases',
 
     url='http://github.com/bioidiap/xbob.db.verification.utils',

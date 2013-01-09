@@ -180,7 +180,7 @@ class SQLiteDatabase(Database):
   It opens an SQL database in a read-only mode and keeps it opened during the whole session.
   Since this class is based on the :py:class:`Database` class, it is abstract and you have to implement the abstract methods of that class."""
 
-  def __init__(self, sqlite_file):
+  def __init__(self, sqlite_file, file_class):
     """Opens a connection to the given SQLite file and keeps it open through the whole session."""
     self.m_sqlite_file = sqlite_file
     if not os.path.exists(sqlite_file):
@@ -190,13 +190,18 @@ class SQLiteDatabase(Database):
       self.m_session = bob.db.utils.session_try_readonly('sqlite', sqlite_file)
     # call base class constructor
     Database.__init__(self)
+    # also set the File class that is used (needed for a query)
+    from .file import File
+    # assert the given file class is derived from the File class
+    assert issubclass(file_class, File)
+    self.m_file_class = file_class
 
   def __del__(self):
     """Closes the connection to the database when it is not needed any more."""
     if self.is_valid():
       # do some magic to close the connection to the database file
       try:
-        # Since the dispose function re-creates a pool 
+        # Since the dispose function re-creates a pool
         #   which might fail in some conditions, e.g., when this destructor is called during the exit of the python interpreter
         self.m_session.bind.dispose()
       except TypeError:
@@ -217,6 +222,61 @@ class SQLiteDatabase(Database):
     self.assert_validity()
     return self.m_session.query(*args)
 
+  def paths(self, ids, prefix=None, suffix=None, preserve_order = True):
+    """Returns a full file paths considering particular file ids, a given
+    directory and an extension
+
+    Keyword Parameters:
+
+    id
+      The ids of the object in the database table "file". This object should be
+      a python iterable (such as a tuple or list).
+
+    prefix
+      The bit of path to be prepended to the filename stem
+
+    suffix
+      The extension determines the suffix that will be appended to the filename
+      stem.
+
+    preserve_order
+      If True (the default) the order of elements is preserved, but the
+      execution time increases.
+
+    Returns a list (that may be empty) of the fully constructed paths given the
+    file ids.
+    """
+
+    file_objects = self.query(self.m_file_class).filter(self.m_file_class.id.in_(ids))
+    if not preserve_order:
+      return [f.make_path(prefix, suffix) for f in file_objects]
+    else:
+      path_dict = {f.id : f.make_path(prefix, suffix) for f in file_objects}
+      return [path_dict[id] for id in ids]
+
+  def reverse(self, paths, preserve_order = True):
+    """Reverses the lookup: from certain paths, return a list of
+    File objects
+
+    Keyword Parameters:
+
+    paths
+      The filename stems to query for. This object should be a python
+      iterable (such as a tuple or list)
+
+    preserve_order
+      If True (the default) the order of elements is preserved, but the
+      execution time increases.
+
+    Returns a list (that may be empty).
+    """
+
+    file_objects = self.query(self.m_file_class).filter(self.m_file_class.path.in_(paths))
+    if not preserve_order:
+      return file_objects
+    else:
+      path_dict = {f.path : f for f in file_objects}
+      return [path_dict[path] for path in paths]
 
 
 class ZTDatabase(Database):
