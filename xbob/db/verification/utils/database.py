@@ -251,7 +251,9 @@ class SQLiteDatabase(Database):
     if not preserve_order:
       return [f.make_path(prefix, suffix) for f in file_objects]
     else:
-      path_dict = {f.id : f.make_path(prefix, suffix) for f in file_objects}
+#      path_dict = {f.id : f.make_path(prefix, suffix) for f in file_objects}  <<-- works fine with python 2.7, but not in 2.6
+      path_dict = {}
+      for f in file_objects: path_dict[f.id] = f.make_path(prefix, suffix)
       return [path_dict[id] for id in ids]
 
   def reverse(self, paths, preserve_order = True):
@@ -275,7 +277,9 @@ class SQLiteDatabase(Database):
     if not preserve_order:
       return file_objects
     else:
-      path_dict = {f.path : f for f in file_objects}
+#      path_dict = {f.path : f for f in file_objects}  <<-- works fine with python 2.7, but not in 2.6
+      path_dict = {}
+      for f in file_objects: path_dict[f.path] = f
       return [path_dict[path] for path in paths]
 
 
