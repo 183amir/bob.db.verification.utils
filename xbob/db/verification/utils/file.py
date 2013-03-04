@@ -56,6 +56,10 @@ class File(object):
       if not hasattr(self, 'id'):
         raise NotImplementedException, "Please either specify the file id on command line, or create an 'id' member variable that is automatically determined (e.g. by SQLite)"
 
+  def __lt__(self, other):
+    """This function defines the order on the File objects. File objects are always ordered by their ID, in ascending order."""
+    return self.id < other.id
+
 
   def __repr__(self):
     """This function describes how to convert a File object into a string.
