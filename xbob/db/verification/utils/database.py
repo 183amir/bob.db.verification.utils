@@ -87,6 +87,13 @@ class Database(object):
     raise NotImplementedError, "This function must be implemented in your derived class."
 
 
+  def provides_file_set_for_protocol(self, protocol = None):
+    """Returns True if the given protocol specifies file sets for probes, instead of a single probe file.
+    In this default implementation, False is returned, throughout.
+    If you need different behaviour, please overload this function in your derived class."""
+    return False
+
+
   def check_parameters_for_validity(self, parameters, parameter_description, valid_parameters, default_parameters = None):
     """Checks the given parameters for validity, i.e., if they are contained in the set of valid parameters.
     It also assures that the parameters form a tuple or a list.
