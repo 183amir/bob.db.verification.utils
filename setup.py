@@ -60,6 +60,7 @@ setup(
     namespace_packages = [
       'xbob',
       'xbob.db',
+      'xbob.db.verification'
     ],
 
     entry_points={
