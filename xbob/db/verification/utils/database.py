@@ -19,8 +19,9 @@
 
 import abc
 import os
+from bob.db.driver import with_metaclass
 
-class Database(object, metaclass=abc.ABCMeta):
+class Database(with_metaclass(abc.ABCMeta, object)):
   """Abstract base class that defines the minimum required API for querying verification databases."""
 
   def __init__(self):
