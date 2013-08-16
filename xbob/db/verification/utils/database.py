@@ -20,10 +20,8 @@
 import abc
 import os
 
-class Database(object):
+class Database(object, metaclass=abc.ABCMeta):
   """Abstract base class that defines the minimum required API for querying verification databases."""
-
-  __metaclass__ = abc.ABCMeta
 
   def __init__(self):
     """This constructor tests if all implemented functions at least take the desired arguments."""
@@ -36,7 +34,7 @@ class Database(object):
       self.objects(groups=test_value, protocol=test_value, purposes=test_value, model_ids=(test_value,))
     except TypeError as e:
       # type error indicates that the given parameters are not valid.
-      raise NotImplementedError, str(e) + "\nPlease implement:\n - the model_ids(...) function with at least the arguments 'groups' and 'protocol'\n - the objects(...) function with at least the arguments 'groups', 'protocol', 'purposes' and 'model_ids'"
+      raise NotImplementedError(str(e) + "\nPlease implement:\n - the model_ids(...) function with at least the arguments 'groups' and 'protocol'\n - the objects(...) function with at least the arguments 'groups', 'protocol', 'purposes' and 'model_ids'")
     except:
       # any other error is fine at this stage.
       pass
@@ -56,7 +54,7 @@ class Database(object):
       The protocol is dependent on your database.
       If you do not have protocols defined, just ignore this field.
     """
-    raise NotImplementedError, "This function must be implemented in your derived class."
+    raise NotImplementedError("This function must be implemented in your derived class.")
 
   @abc.abstractmethod
   def objects(self, groups = None, protocol = None, purposes = None, model_ids = None, **kwargs):
@@ -84,7 +82,7 @@ class Database(object):
       In cases, where there is one model per file, model ids and file ids are identical.
       But, there might also be other cases.
     """
-    raise NotImplementedError, "This function must be implemented in your derived class."
+    raise NotImplementedError("This function must be implemented in your derived class.")
 
 
   def provides_file_set_for_protocol(self, protocol = None):
@@ -129,7 +127,7 @@ class Database(object):
     # perform the checks
     for parameter in parameters:
       if parameter not in valid_parameters:
-        raise ValueError, "Invalid %s '%s'. Valid values are %s, or lists/tuples of those" % (parameter_description, parameter, valid_parameters)
+        raise ValueError("Invalid %s '%s'. Valid values are %s, or lists/tuples of those" % (parameter_description, parameter, valid_parameters))
 
     # check passed, now return the list/tuple of parameters
     return parameters
@@ -164,18 +162,18 @@ class Database(object):
         parameter = default_parameter
       else:
         # ... -> raise an exception
-        raise ValueError, "The %s has to be one of %s, it might not be 'None'." % (parameter_description, valid_parameters)
+        raise ValueError("The %s has to be one of %s, it might not be 'None'." % (parameter_description, valid_parameters))
 
     if isinstance(parameter, (list, tuple, set)):
       # the parameter is in a list/tuple ...
       if len(parameter) > 1:
-        raise ValueError, "The %s has to be one of %s, it might not be more than one (%s was given)." % (parameter_description, valid_parameters, parameter)
+        raise ValueError("The %s has to be one of %s, it might not be more than one (%s was given)." % (parameter_description, valid_parameters, parameter))
       # ... -> we take the first one
       parameter = parameter[0]
 
     # perform the check
     if parameter not in valid_parameters:
-      raise ValueError, "The given %s '%s' is not allowed. Please choose one of %s." % (parameter_description, parameter, valid_parameters)
+      raise ValueError("The given %s '%s' is not allowed. Please choose one of %s." % (parameter_description, parameter, valid_parameters))
 
     # tests passed -> return the parameter
     return parameter
@@ -222,7 +220,7 @@ class SQLiteDatabase(Database):
   def assert_validity(self):
     """Raise a RuntimeError if the database back-end is not available."""
     if not self.is_valid():
-      raise RuntimeError, "Database of type 'sqlite' cannot be found at expected location '%s'." % self.m_sqlite_file
+      raise RuntimeError("Database of type 'sqlite' cannot be found at expected location '%s'." % self.m_sqlite_file)
 
   def query(self, *args):
     """Creates a query to the database using the given arguments."""
@@ -307,7 +305,7 @@ class ZTDatabase(Database):
       self.zobjects(groups=test_value, protocol=test_value)
     except TypeError as e:
       # type error indicates that the given parameters are not valid.
-      raise NotImplementedError, str(e) + "\nPlease implement:\n - the tmodel_ids(...) function with at least the arguments 'groups' and 'protocol'\n - the tobjects(...) function with at least the arguments 'groups', 'protocol' and 'model_ids'\n - the zobjects(...) function with at least the arguments 'groups' and 'protocol'"
+      raise NotImplementedError(str(e) + "\nPlease implement:\n - the tmodel_ids(...) function with at least the arguments 'groups' and 'protocol'\n - the tobjects(...) function with at least the arguments 'groups', 'protocol' and 'model_ids'\n - the zobjects(...) function with at least the arguments 'groups' and 'protocol'")
     except:
       # any other error is fine at this stage.
       pass
@@ -327,7 +325,7 @@ class ZTDatabase(Database):
       The protocol is dependent on your database.
       If you do not have protocols defined, just ignore this field.
     """
-    raise NotImplementedError, "This function must be implemented in your derived class."
+    raise NotImplementedError("This function must be implemented in your derived class.")
 
   @abc.abstractmethod
   def tobjects(self, groups = None, protocol = None, model_ids = None, **kwargs):
@@ -351,7 +349,7 @@ class ZTDatabase(Database):
       In cases, where there is one model per file, model ids and file ids are identical.
       But, there might also be other cases.
     """
-    raise NotImplementedError, "This function must be implemented in your derived class."
+    raise NotImplementedError("This function must be implemented in your derived class.")
 
   @abc.abstractmethod
   def zobjects(self, groups = None, protocol = None, **kwargs):
@@ -368,5 +366,5 @@ class ZTDatabase(Database):
       The protocol is dependent on your database.
       If you do not have protocols defined, just ignore this field.
     """
-    raise NotImplementedError, "This function must be implemented in your derived class."
+    raise NotImplementedError("This function must be implemented in your derived class.")
 

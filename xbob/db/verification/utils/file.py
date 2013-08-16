@@ -54,7 +54,7 @@ class File(object):
     else:
       # check that the file id at least exists
       if not hasattr(self, 'id'):
-        raise NotImplementedException, "Please either specify the file id as parameter, or create an 'id' member variable in the derived class that is automatically determined (e.g. by SQLite)"
+        raise NotImplementedException("Please either specify the file id as parameter, or create an 'id' member variable in the derived class that is automatically determined (e.g. by SQLite)")
 
   def __lt__(self, other):
     """This function defines the order on the File objects. File objects are always ordered by their ID, in ascending order."""
