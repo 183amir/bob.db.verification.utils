@@ -17,11 +17,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import abc
 import os
-from bob.db.driver import with_metaclass
+import abc
+import six
 
-class Database(with_metaclass(abc.ABCMeta, object)):
+class Database(six.with_metaclass(abc.ABCMeta, object)):
   """Abstract base class that defines the minimum required API for querying verification databases."""
 
   def __init__(self):
