@@ -89,8 +89,23 @@ class Database(six.with_metaclass(abc.ABCMeta, object)):
   def provides_file_set_for_protocol(self, protocol = None):
     """Returns True if the given protocol specifies file sets for probes, instead of a single probe file.
     In this default implementation, False is returned, throughout.
-    If you need different behaviour, please overload this function in your derived class."""
+    If you need different behavior, please overload this function in your derived class."""
     return False
+
+
+  def uniquify(self, file_list):
+    """Sorts the given list of File objects and removes duplicates from it.
+
+    Keyword parameters:
+
+    file_list
+      A list of File objects to be handled.
+      Also other objects can be handled, as long as they are sortable.
+
+    Returns
+      A sorted copy of the given list with the duplicated removed.
+    """
+    return sorted(list(set(file_list)))
 
 
   def check_parameters_for_validity(self, parameters, parameter_description, valid_parameters, default_parameters = None):
