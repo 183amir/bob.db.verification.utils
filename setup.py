@@ -43,14 +43,14 @@ setup(
     # This is the basic information about your project. Modify all this
     # information before releasing code publicly.
     name='xbob.db.verification.utils',
-    version='0.1.11a',
+    version='1.0.1a0',
     description='Utilities for xbob.db verification databases',
 
     url='http://pypi.python.org/pypi/xbob.db.verification.utils',
     license='GPLv3',
     author='Manuel Guenther',
     author_email='manuel.guenther@idiap.ch',
-    keywords='bob, xbob, xbob.db, face recognition',
+    keywords='bob, xbob, xbob.db, verification',
 
     # If you have a better, long description of your package, place it on the
     # 'doc' directory and then hook it here
@@ -84,10 +84,10 @@ setup(
 
       # tests that are _exported_ (that can be executed by other packages) can
       # be signalized like this:
-#      'bob.test': [
-#         'example = xbob.example.test:MyTests',
-#         ],
-      },
+      'bob.test': [
+        'verification.utils = xbob.db.verification.utils.test:VerificationUtilsTest',
+      ],
+    },
 
     # Classifiers are important if you plan to distribute this package through
     # PyPI. You can find the complete list of classifiers that are valid and

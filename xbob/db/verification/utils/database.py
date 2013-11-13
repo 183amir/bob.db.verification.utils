@@ -24,8 +24,15 @@ import six
 class Database(six.with_metaclass(abc.ABCMeta, object)):
   """Abstract base class that defines the minimum required API for querying verification databases."""
 
-  def __init__(self):
-    """This constructor tests if all implemented functions at least take the desired arguments."""
+  def __init__(self, original_directory = None, original_extension = None):
+    """This constructor tests if all implemented functions at least take the desired arguments.
+    Keyword
+    The ``original_directory`` and ``original_extension`` parameters are used in the ``original_file_name`` function.
+    If omitted,
+    """
+    # copy original file name and extension
+    self.original_directory = original_directory
+    self.original_extension = original_extension
     # try if the implemented model_ids() and objects() function have at least the required interface
     try:
       # create a value that is very unlikely a valid value for anything
@@ -33,12 +40,17 @@ class Database(six.with_metaclass(abc.ABCMeta, object)):
       # test if the parameters of the functions apply
       self.model_ids(groups=test_value, protocol=test_value)
       self.objects(groups=test_value, protocol=test_value, purposes=test_value, model_ids=(test_value,))
+      self.annotations(file_id=test_value)
     except TypeError as e:
       # type error indicates that the given parameters are not valid.
-      raise NotImplementedError(str(e) + "\nPlease implement:\n - the model_ids(...) function with at least the arguments 'groups' and 'protocol'\n - the objects(...) function with at least the arguments 'groups', 'protocol', 'purposes' and 'model_ids'")
+      raise NotImplementedError(str(e) + "\nPlease implement:\n - the model_ids(...) function with at least the arguments 'groups' and 'protocol'\n - the objects(...) function with at least the arguments 'groups', 'protocol', 'purposes' and 'model_ids'\n - the annotations() function with at least the arguments 'file_id'.")
     except:
       # any other error is fine at this stage.
       pass
+
+  #################################################################
+  ###### Methods to be overwritten by derived classes #############
+  #################################################################
 
   @abc.abstractmethod
   def model_ids(self, groups = None, protocol = None, **kwargs):
@@ -85,6 +97,25 @@ class Database(six.with_metaclass(abc.ABCMeta, object)):
     """
     raise NotImplementedError("This function must be implemented in your derived class.")
 
+
+  def annotations(self, file_id):
+    """This function returns the annotations for the given file id as a dictionary.
+
+    Keyword parameters:
+
+    file_id
+      The ID of the File object you want to retrieve the annotations for,
+
+    Return value:
+      A dictionary of annotations, usually something like {'leye':(le_y,le_x), 'reye':(re_y,re_x), ...},
+      or None if there are no annotations for the given file ID (which is the case in this base class implementation).
+    """
+    return None
+
+
+  #################################################################
+  ######### Methods to be used by derived classes #################
+  #################################################################
 
   def provides_file_set_for_protocol(self, protocol = None):
     """Returns True if the given protocol specifies file sets for probes, instead of a single probe file.
@@ -195,13 +226,103 @@ class Database(six.with_metaclass(abc.ABCMeta, object)):
     return parameter
 
 
+  #################################################################
+  ######### Methods to provide common functionality ###############
+  #################################################################
+
+  def original_file_name(self, file):
+    """This function returns the original file name for the given File object.
+
+    Keyword parameters:
+
+    file
+      The File objects for which the file name should be retrieved
+
+    Return value:
+      The original file name for the given File object
+    """
+    # check if directory is set
+    if not self.original_directory or not self.original_extension:
+      raise ValueError("The original_directory and/or the original_extension were not specified in the constructor.")
+    # extract file name
+    file_name = file.make_path(self.original_directory, self.original_extension)
+    if os.path.exists(file_name):
+      return file_name
+    raise ValueError("The file '%s' was not found. Please check the original directory '%s' and extension '%s'?" % (file_name, self.original_directory, self.original_extension))
+
+  def original_file_names(self, files):
+    """This function returns the list of original file names for the given list of File objects.
+
+    Keyword parameters:
+
+    files
+      The list of File objects for which the file names should be retrieved
+
+    Return value:
+      The original file names for the given File objects, in the same order.
+    """
+
+    # extract file names
+    return [self.original_file_name(f) for f in files]
+
+  def file_names(self, files, directory, extension):
+    """This function returns the list of original file names for the given list of File objects.
+
+    Keyword parameters:
+
+    files
+      The list of File objects for which the file names should be retrieved
+
+    directory
+      The base directory where the files are stored
+
+    extension
+      The file name extension of the files
+
+    Return value:
+      The file names for the given File objects, in the same order.
+    """
+    # extract file names
+    return [f.make_path(directory, extension) for f in files]
+
+
+  def all_files(self, **kwargs):
+    """Returns the list of all File objects that satisfy your query.
+    For possible keyword arguments, please check the implementation of the derived class Database.objects() function."""
+    return self.uniquify(self.objects(**kwargs))
+
+  def training_files(self, **kwargs):
+    """Returns the list of all training (world) File objects that satisfy your query.
+    For possible keyword arguments, please check the implementation of the derived class Database.objects() function."""
+    return self.uniquify(self.objects(groups = 'world', **kwargs))
+
+  def model_ids(self, protocol, group = 'dev', **kwargs):
+    """Returns the list of model ids of the given protocol for the given group that satisfy your query.
+    For possible keyword arguments, please check the implementation of the derived class Database.objects() function."""
+    return sorted(self.model_ids(protocol=protocol, groups=group, **kwargs))
+
+  def enroll_files(self, protocol, model_id, group = 'dev'):
+    """Returns the list of enrollment File objects from the given model id of the given protocol for the given group that satisfy your query.
+    For possible keyword arguments, please check the implementation of the derived class Database.objects() function."""
+    return self.uniquify(self.objects(protocol=protocol, groups=group, model_ids=(model_id,), purposes='enrol', **kwargs))
+
+  def probe_files(self, protocol, model_id, group = 'dev'):
+    """Returns the list of probe File objects to probe the model with the given model id of the given protocol for the given group that satisfy your query.
+    If the model_id is None (the default), all possible probe files are returned.
+    For possible keyword arguments, please check the implementation of the derived class Database.objects() function."""
+    if model_id:
+      return self.uniquify(self.objects(protocol=protocol, groups=group, model_ids=(model_id,), purposes='probe', **kwargs))
+    else:
+      return self.uniquify(self.objects(protocol=protocol, groups=group, purposes='probe', **kwargs))
+    return self.sort(files)
+
 
 class SQLiteDatabase(Database):
   """This class can be used for handling SQL databases.
   It opens an SQL database in a read-only mode and keeps it opened during the whole session.
   Since this class is based on the :py:class:`Database` class, it is abstract and you have to implement the abstract methods of that class."""
 
-  def __init__(self, sqlite_file, file_class):
+  def __init__(self, sqlite_file, file_class, **kwargs):
     """Opens a connection to the given SQLite file and keeps it open through the whole session."""
     self.m_sqlite_file = sqlite_file
     if not os.path.exists(sqlite_file):
@@ -210,7 +331,7 @@ class SQLiteDatabase(Database):
       import bob.db.utils
       self.m_session = bob.db.utils.session_try_readonly('sqlite', sqlite_file)
     # call base class constructor
-    Database.__init__(self)
+    Database.__init__(self, **kwargs)
     # also set the File class that is used (needed for a query)
     from .file import File
     # assert the given file class is derived from the File class
@@ -307,10 +428,10 @@ class SQLiteDatabase(Database):
 class ZTDatabase(Database):
   """This class defines another set of abstract functions that need to be implemented if your database provides the interface for computing scores used for ZT-normalization."""
 
-  def __init__(self):
+  def __init__(self, **kwargs):
     """This constructor tests if all implemented functions take the correct arguments."""
     # call base class constructor
-    Database.__init__(self)
+    Database.__init__(self, **kwargs)
     # try if the implemented tmodel_ids(), tobjects() and zobjects() function have at least the required interface
     try:
       # create a value that is very unlikely a valid value for anything
@@ -383,4 +504,20 @@ class ZTDatabase(Database):
       If you do not have protocols defined, just ignore this field.
     """
     raise NotImplementedError("This function must be implemented in your derived class.")
+
+
+  def t_model_ids(self, protocol, group = 'dev', **kwargs):
+    """Returns the list of model ids used for T-Norm of the given protocol for the given group that satisfy your query.
+    For possible keyword arguments, please check the implementation of the derived class Database.objects() function."""
+    return self.uniquify(self.tmodel_ids(protocol=protocol, groups=group, **kwargs))
+
+  def t_enroll_files(self, protocol, model_id, group = 'dev'):
+    """Returns the list of T-Norm model enrollment File objects from the given model id of the given protocol for the given group that satisfy your query.
+    For possible keyword arguments, please check the implementation of the derived class Database.objects() function."""
+    return self.uniquify(self.tobjects(protocol=protocol, groups=group, model_ids=(model_id,), **kwargs))
+
+  def z_probe_files(self, protocol, model_id, group = 'dev'):
+    """Returns the list of Z-Norm probe File objects to probe the model with the given model id of the given protocol for the given group that satisfy your query.
+    For possible keyword arguments, please check the implementation of the derived class Database.objects() function."""
+    return self.uniquify(self.zobjects(protocol=protocol, groups=group, model_ids=(model_id,), purposes='probe', **kwargs))
 

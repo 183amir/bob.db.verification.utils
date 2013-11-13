@@ -85,7 +85,7 @@ class File(object):
     if not directory: directory = ''
     if not extension: extension = ''
     # create the path
-    return os.path.join(directory, self.path + extension)
+    return str(os.path.join(directory, self.path + extension))
 
 
   def save(self, data, directory=None, extension='.hdf5'):

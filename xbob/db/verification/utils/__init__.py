@@ -19,4 +19,5 @@
 
 from .database import Database, SQLiteDatabase, ZTDatabase
 from .file import File
+from .annotations import read_annotation_file
 
