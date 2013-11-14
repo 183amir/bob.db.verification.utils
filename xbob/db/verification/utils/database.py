@@ -291,22 +291,32 @@ class Database(six.with_metaclass(abc.ABCMeta, object)):
     For possible keyword arguments, please check the implementation of the derived class Database.objects() function."""
     return self.uniquify(self.objects(**kwargs))
 
-  def training_files(self, **kwargs):
+  def training_files(self, protocol = None, **kwargs):
     """Returns the list of all training (world) File objects that satisfy your query.
     For possible keyword arguments, please check the implementation of the derived class Database.objects() function."""
-    return self.uniquify(self.objects(groups = 'world', **kwargs))
+    return self.uniquify(self.objects(protocol=protocol, groups='world', **kwargs))
 
-  def model_ids(self, protocol, group = 'dev', **kwargs):
+  def test_files(self, protocol = None, group = 'dev', **kwargs):
+    """Returns the list of all test File objects of the given group that satisfy your query.
+    Test objects are all File objects that serve either for enrollment or probing.
+    For possible keyword arguments, please check the implementation of the derived class Database.objects() function."""
+    return self.uniquify(self.objects(protocol=protocol, groups=group, **kwargs))
+
+  def model_ids(self, protocol = None, group = 'dev', **kwargs):
     """Returns the list of model ids of the given protocol for the given group that satisfy your query.
     For possible keyword arguments, please check the implementation of the derived class Database.objects() function."""
     return sorted(self.model_ids(protocol=protocol, groups=group, **kwargs))
 
-  def enroll_files(self, protocol, model_id, group = 'dev'):
+  def enroll_files(self, protocol = None, model_id = None, group = 'dev', **kwargs):
     """Returns the list of enrollment File objects from the given model id of the given protocol for the given group that satisfy your query.
+    If the model_id is None (the default), enrollment files for all models are returned.
     For possible keyword arguments, please check the implementation of the derived class Database.objects() function."""
-    return self.uniquify(self.objects(protocol=protocol, groups=group, model_ids=(model_id,), purposes='enrol', **kwargs))
+    if model_id:
+      return self.uniquify(self.objects(protocol=protocol, groups=group, model_ids=(model_id,), purposes='enrol', **kwargs))
+    else:
+      return self.uniquify(self.objects(protocol=protocol, groups=group, purposes='enrol', **kwargs))
 
-  def probe_files(self, protocol, model_id, group = 'dev'):
+  def probe_files(self, protocol = None, model_id = None, group = 'dev', **kwargs):
     """Returns the list of probe File objects to probe the model with the given model id of the given protocol for the given group that satisfy your query.
     If the model_id is None (the default), all possible probe files are returned.
     For possible keyword arguments, please check the implementation of the derived class Database.objects() function."""
@@ -314,7 +324,7 @@ class Database(six.with_metaclass(abc.ABCMeta, object)):
       return self.uniquify(self.objects(protocol=protocol, groups=group, model_ids=(model_id,), purposes='probe', **kwargs))
     else:
       return self.uniquify(self.objects(protocol=protocol, groups=group, purposes='probe', **kwargs))
-    return self.sort(files)
+
 
 
 class SQLiteDatabase(Database):
