@@ -53,6 +53,20 @@ class Database(six.with_metaclass(abc.ABCMeta, object)):
   #################################################################
 
   @abc.abstractmethod
+  def groups(self, protocol=None, **kwargs):
+    """This function returns the list of groups for this database.
+
+    protocol
+      The protocol for which the groups should be retrieved.
+      The protocol is dependent on your database.
+      If you do not have protocols defined, just ignore this field.
+
+    Returns: a list of groups
+    """
+    raise NotImplementedError("This function must be implemented in your derived class.")
+
+
+  @abc.abstractmethod
   def model_ids(self, groups = None, protocol = None, **kwargs):
     """This function returns the ids of the models of the given groups for the given protocol.
 
