@@ -43,7 +43,7 @@ setup(
     # This is the basic information about your project. Modify all this
     # information before releasing code publicly.
     name='xbob.db.verification.utils',
-    version='1.0.1',
+    version='1.0.2a0',
     description='Utilities for xbob.db verification databases',
 
     url='http://pypi.python.org/pypi/xbob.db.verification.utils',
