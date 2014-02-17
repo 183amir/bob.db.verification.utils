@@ -177,7 +177,7 @@ class Database(six.with_metaclass(abc.ABCMeta, object)):
       The list/tuple of default parameters that will be returned in case parameters is None or empty.
       If omitted, all valid_parameters are used.
     """
-    if not parameters:
+    if parameters is None:
       # parameters are not specified, i.e., 'None' or empty lists
       parameters = default_parameters if default_parameters is not None else valid_parameters
 
@@ -216,7 +216,7 @@ class Database(six.with_metaclass(abc.ABCMeta, object)):
       The default parameter that will be returned in case parameter is None or empty.
       If omitted and parameter is empty, a ValueError is raised.
     """
-    if not parameter:
+    if parameter is None:
       # parameter not specified ...
       if default_parameter is not None:
         # ... -> use default parameter
@@ -334,7 +334,7 @@ class Database(six.with_metaclass(abc.ABCMeta, object)):
     """Returns the list of probe File objects to probe the model with the given model id of the given protocol for the given group that satisfy your query.
     If the model_id is None (the default), all possible probe files are returned.
     For possible keyword arguments, please check the implementation of the derived class Database.objects() function."""
-    if model_id:
+    if model_id is not None:
       return self.uniquify(self.objects(protocol=protocol, groups=group, model_ids=(model_id,), purposes='probe', **kwargs))
     else:
       return self.uniquify(self.objects(protocol=protocol, groups=group, purposes='probe', **kwargs))
