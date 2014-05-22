@@ -369,6 +369,7 @@ class SQLiteDatabase(Database):
       try:
         # Since the dispose function re-creates a pool
         #   which might fail in some conditions, e.g., when this destructor is called during the exit of the python interpreter
+        self.m_session.close()
         self.m_session.bind.dispose()
       except TypeError:
         # ... I can just ignore the according exception...
