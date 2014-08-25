@@ -42,15 +42,15 @@ setup(
 
     # This is the basic information about your project. Modify all this
     # information before releasing code publicly.
-    name='xbob.db.verification.utils',
-    version='1.0.2a0',
-    description='Utilities for xbob.db verification databases',
+    name='bob.db.verification.utils',
+    version='2.0.0a0',
+    description='Utilities for bob.db verification databases',
 
-    url='http://pypi.python.org/pypi/xbob.db.verification.utils',
+    url='http://pypi.python.org/pypi/bob.db.verification.utils',
     license='GPLv3',
     author='Manuel Guenther',
     author_email='manuel.guenther@idiap.ch',
-    keywords='bob, xbob, xbob.db, verification',
+    keywords='bob, bob.db, verification',
 
     # If you have a better, long description of your package, place it on the
     # 'doc' directory and then hook it here
@@ -68,16 +68,18 @@ setup(
     install_requires=[
       'setuptools',
       'six', # py2/3 compatibility library
-      'bob', # base signal proc./machine learning library
+      'bob.core',
+      'bob.io.base',
+      'bob.db.base',
     ],
 
     # Our database packages are good examples of namespace implementations
     # using several layers. You can check them out here:
     # https://github.com/idiap/bob/wiki/Satellite-Packages
     namespace_packages = [
-      'xbob',
-      'xbob.db',
-      'xbob.db.verification'
+      'bob',
+      'bob.db',
+      'bob.db.verification'
     ],
 
     entry_points={
@@ -85,7 +87,7 @@ setup(
       # tests that are _exported_ (that can be executed by other packages) can
       # be signalized like this:
       'bob.test': [
-        'verification.utils = xbob.db.verification.utils.test:VerificationUtilsTest',
+        'verification.utils = bob.db.verification.utils.test:VerificationUtilsTest',
       ],
     },
 

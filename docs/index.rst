@@ -6,15 +6,15 @@
  Verification Database Utilities
 =================================
 
-When you write an xbob.db database that should be used for verification (e.g. face verification), you should follow the structure provided by this package.
+When you write an bob.db database that should be used for verification (e.g. face verification), you should follow the structure provided by this package.
 In order to assure compatibility with other verification databases, please:
 
-1. derive your ``File`` class from ``xbob.db.verification.utils.File``
-2. derive your ``Database`` class from ``xbob.db.verification.utils.Database``
+1. derive your ``File`` class from ``bob.db.verification.utils.File``
+2. derive your ``Database`` class from ``bob.db.verification.utils.Database``
 
 and implement the desired abstract methods.
-If your database uses the SQLite interface, you should directly derive your ``Database`` from ``xbob.db.verification.utils.SQLiteDatabase``.
-If you also provide functions for dealing with ZT score normalization, please **also** derive your class from ``xbob.db.verification.utils.ZTDatabase``.
+If your database uses the SQLite interface, you should directly derive your ``Database`` from ``bob.db.verification.utils.SQLiteDatabase``.
+If you also provide functions for dealing with ZT score normalization, please **also** derive your class from ``bob.db.verification.utils.ZTDatabase``.
 In any case, please call the corresponding base class constructor(s) in your constructor.
 
 
