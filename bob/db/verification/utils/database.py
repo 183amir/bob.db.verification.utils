@@ -368,8 +368,7 @@ class SQLiteDatabase(Database):
       The ``File`` class, which needs to be derived from :py:class:`bob.db.verification.utils.File`.
       This is required to be able to :py:func:`query` the databases later on.
 
-    **kwargs
-      Other keyword arguments passed to the :py:class:`bob.db.verification.utils.Database` constructor.
+    Other keyword arguments passed to the :py:class:`bob.db.verification.utils.Database` constructor.
     """
 
     self.m_sqlite_file = sqlite_file
