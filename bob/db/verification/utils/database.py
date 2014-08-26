@@ -25,10 +25,18 @@ class Database(six.with_metaclass(abc.ABCMeta, object)):
   """Abstract base class that defines the minimum required API for querying verification databases."""
 
   def __init__(self, original_directory = None, original_extension = None):
-    """This constructor tests if all implemented functions at least take the desired arguments.
-    Keyword
-    The ``original_directory`` and ``original_extension`` parameters are used in the ``original_file_name`` function.
-    If omitted,
+    """**Contructor Documentation**
+
+    The constructor tests if all implemented functions at least take the desired arguments.
+    When ``original_directory`` and ``original_extension`` are specified, the :py:func:`original_file_name` method will be able to return the full path of the original files.
+
+    Keyword arguments:
+
+    original_directory : str or None
+      The base directory, where the original data files can be found
+
+    original_extension : str or None
+      The file name extension of the original files (e.g., ``'.png'`` or ``'.avi'``)
     """
     # copy original file name and extension
     self.original_directory = original_directory
@@ -347,7 +355,23 @@ class SQLiteDatabase(Database):
   Since this class is based on the :py:class:`Database` class, it is abstract and you have to implement the abstract methods of that class."""
 
   def __init__(self, sqlite_file, file_class, **kwargs):
-    """Opens a connection to the given SQLite file and keeps it open through the whole session."""
+    """**Contructor Documentation**
+
+    Opens a connection to the given SQLite file and keeps it open through the whole session.
+
+    Keyword parameters:
+
+    sqlite_file
+      The file name (including full path) of the SQLite file to read or generate.
+
+    file_class
+      The ``File`` class, which needs to be derived from :py:class:`bob.db.verification.utils.File`.
+      This is required to be able to :py:func:`query` the databases later on.
+
+    **kwargs
+      Other keyword arguments passed to the :py:class:`bob.db.verification.utils.Database` constructor.
+    """
+
     self.m_sqlite_file = sqlite_file
     if not os.path.exists(sqlite_file):
       self.m_session = None
@@ -454,7 +478,11 @@ class ZTDatabase(Database):
   """This class defines another set of abstract functions that need to be implemented if your database provides the interface for computing scores used for ZT-normalization."""
 
   def __init__(self, **kwargs):
-    """This constructor tests if all implemented functions take the correct arguments."""
+    """**Construtctor Documentation**
+
+    This constructor tests if all implemented functions take the correct arguments.
+    All keyword parameters will be passed unaltered to the :py:class:`bob.db.verification.utils.Database` constructor.
+    """
     # call base class constructor
     Database.__init__(self, **kwargs)
     # try if the implemented tmodel_ids(), tobjects() and zobjects() function have at least the required interface

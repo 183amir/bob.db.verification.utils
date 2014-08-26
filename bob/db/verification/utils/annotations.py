@@ -21,6 +21,32 @@ import os
 import logging
 logger = logging.getLogger("bob")
 
+_idiap_annotations = {
+  1 : 'reyeo',
+  2 : 'reyet',
+  3 : 'reyep',
+  4 : 'reyeb',
+  5 : 'reyei',
+  6 : 'leyei',
+  7 : 'leyet',
+  8 : 'leyep',
+  9 : 'leyeb',
+  10: 'leyeo',
+  11: 'rbrowo',
+  12: 'rbrowi',
+  13: 'lbrowi',
+  14: 'lbrowo',
+  15: 'noser',
+  16: 'noset',
+  17: 'nosel',
+  18: 'mouthr',
+  19: 'moutht',
+  20: 'mouthb',
+  21: 'mouthl',
+  22: 'chin'
+}
+
+
 def read_annotation_file(file_name, annotation_type):
   """This function provides default functionality to read annotation files.
   It returns a dictionary with the keypoint name as key and the position (y,x) as value, and maybe some additional annotations.
@@ -58,7 +84,7 @@ def read_annotation_file(file_name, annotation_type):
         annotations[positions[0]] = (float(positions[2]),float(positions[1]))
 
     elif str(annotation_type) == 'idiap':
-      # multiple lines, no header, each line contains an integral keypoint identifier, or other identifier like 'gender', 'age',...
+      # Idiap format: multiple lines, no header, each line contains an integral keypoint identifier, or other identifier like 'gender', 'age',...
       for line in f:
         positions = line.rstrip().split()
         if positions:
@@ -66,17 +92,15 @@ def read_annotation_file(file_name, annotation_type):
             # position field
             assert len(positions) == 3
             id = int(positions[0])
-            annotations['key%d'%id] = (float(positions[2]),float(positions[1]))
+            annotations[_idiap_annotations[id]] = (float(positions[2]),float(positions[1]))
           else:
-            # keyword field
-            assert len(positions) == 2
-            annotations[positions[0]] = positions[1]
-
-        # finally, we add the eye center coordinates as the center between the eye corners; the annotations 3 and 8 seem to be the pupils...
-        if 'key1' in annotations and 'key5' in annotations:
-          annotations['reye'] = ((annotations['key1'][0] + annotations['key5'][0])/2., (annotations['key1'][1] + annotations['key5'][1])/2.)
-        if 'key6' in annotations and 'key10' in annotations:
-          annotations['leye'] = ((annotations['key6'][0] + annotations['key10'][0])/2., (annotations['key6'][1] + annotations['key10'][1])/2.)
+            # another field, we take the first entry as key and the rest as values
+            annotations[positions[0]] = positions[1:]
+      # finally, we add the eye center coordinates as the center between the eye corners; the annotations 3 and 8 are the pupils...
+      if 'reyeo' in annotations and 'reyei' in annotations:
+        annotations['reye'] = ((annotations['reyeo'][0] + annotations['reyei'][0])/2., (annotations['reyeo'][1] + annotations['reyei'][1])/2.)
+      if 'leyeo' in annotations and 'leyei' in annotations:
+        annotations['leye'] = ((annotations['leyeo'][0] + annotations['leyei'][0])/2., (annotations['leyeo'][1] + annotations['leyei'][1])/2.)
 
   if 'leye' in annotations and 'reye' in annotations and annotations['leye'][1] < annotations['reye'][1]:
     logger.warn("The eye annotations in file '%s' might be exchanged!" % file_name)

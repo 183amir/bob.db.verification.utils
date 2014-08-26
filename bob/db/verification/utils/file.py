@@ -24,7 +24,9 @@ class File(object):
   """Abstract base class that defines basic properties of File objects"""
 
   def __init__(self, client_id, path, file_id = None):
-    """Initialize the File object with the minimum required data.
+    """**Constructor Documentation**
+
+    Initialize the File object with the minimum required data.
 
     Parameters:
 

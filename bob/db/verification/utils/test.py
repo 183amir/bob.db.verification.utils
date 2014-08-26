@@ -28,7 +28,7 @@ class VerificationUtilsTest (unittest.TestCase):
     # check the different annotation types
     for annotation_type in ('eyecenter', 'named', 'idiap'):
       # get the annotation file name
-      annotation_file = datafile("%s.pos" % annotation_type, 'bob.db.verification.utils', 'test_files')
+      annotation_file = datafile("%s.pos" % annotation_type, 'bob.db.verification.utils')
       # read the annotations
       annotations = bob.db.verification.utils.read_annotation_file(annotation_file, annotation_type)
       # check
