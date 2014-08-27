@@ -1,3 +1,3 @@
 include README.rst bootstrap.py buildout.cfg
 recursive-include docs *.py *.rst
-recursive-include bob/db/verification/utils/test_files *.pos
+recursive-include bob/db/verification/utils/data *.pos
