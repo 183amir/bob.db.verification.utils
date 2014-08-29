@@ -20,6 +20,9 @@
 import os
 import abc
 import six
+# Nose is detecting a function as a test function, while it is not...
+from numpy.testing.decorators import setastest
+
 
 class Database(six.with_metaclass(abc.ABCMeta, object)):
   """Abstract base class that defines the minimum required API for querying verification databases."""
@@ -61,10 +64,10 @@ class Database(six.with_metaclass(abc.ABCMeta, object)):
   #################################################################
 
   @abc.abstractmethod
-  def groups(self, protocol=None, **kwargs):
+  def groups(self, protocol = None, **kwargs):
     """This function returns the list of groups for this database.
 
-    protocol
+    protocol : str
       The protocol for which the groups should be retrieved.
       The protocol is dependent on your database.
       If you do not have protocols defined, just ignore this field.
@@ -80,11 +83,11 @@ class Database(six.with_metaclass(abc.ABCMeta, object)):
 
     Keyword parameters:
 
-    groups
+    groups : str or [str]
       The groups of which the model ids should be returned.
       Usually, groups are one or more elements of ('world', 'dev', 'eval')
 
-    protocol
+    protocol : str
       The protocol for which the model ids should be retrieved.
       The protocol is dependent on your database.
       If you do not have protocols defined, just ignore this field.
@@ -97,7 +100,7 @@ class Database(six.with_metaclass(abc.ABCMeta, object)):
 
     Keyword parameters:
 
-    groups
+    groups : str or [str]
       The groups of which the clients should be returned.
       Usually, groups are one or more elements of ('world', 'dev', 'eval')
 
@@ -106,11 +109,11 @@ class Database(six.with_metaclass(abc.ABCMeta, object)):
       The protocol is dependent on your database.
       If you do not have protocols defined, just ignore this field.
 
-    purposes
+    purposes : str or [str]
       The purposes for which File objects should be retrieved.
       Usually, purposes are one of ('enrol', 'probe').
 
-    model_ids
+    model_ids : [various type]
       The model ids for which the File objects should be retrieved.
       What defines a 'model id' is dependent on the database.
       In cases, where there is only one model per client, model ids and client ids are identical.
@@ -125,7 +128,7 @@ class Database(six.with_metaclass(abc.ABCMeta, object)):
 
     Keyword parameters:
 
-    file_id
+    file_id : various type
       The ID of the File object you want to retrieve the annotations for,
 
     Return value:
@@ -151,7 +154,7 @@ class Database(six.with_metaclass(abc.ABCMeta, object)):
 
     Keyword parameters:
 
-    file_list
+    file_list : [:py:class:`File`]
       A list of File objects to be handled.
       Also other objects can be handled, as long as they are sortable.
 
@@ -170,18 +173,18 @@ class Database(six.with_metaclass(abc.ABCMeta, object)):
 
     Keyword parameters:
 
-    parameters
+    parameters : str, [str] or None
       The parameters to be checked.
       Might be a string, a list/tuple of strings, or None.
 
-    parameter_description
+    parameter_description : str
       A short description of the parameter.
       This will be used to raise an exception in case the parameter is not valid.
 
-    valid_parameters
+    valid_parameters : [str]
       A list/tuple of valid values for the parameters.
 
-    default_parameters
+    default_parameters : [str] or None
       The list/tuple of default parameters that will be returned in case parameters is None or empty.
       If omitted, all valid_parameters are used.
     """
@@ -209,18 +212,18 @@ class Database(six.with_metaclass(abc.ABCMeta, object)):
 
     Keyword parameters:
 
-    parameter
+    parameter : str
       The single parameter to be checked.
       Might be a string or None.
 
-    parameter_description
+    parameter_description : str
       A short description of the parameter.
       This will be used to raise an exception in case the parameter is not valid.
 
-    valid_parameters
+    valid_parameters : [str]
       A list/tuple of valid values for the parameters.
 
-    default_parameters
+    default_parameters : [str] or None
       The default parameter that will be returned in case parameter is None or empty.
       If omitted and parameter is empty, a ValueError is raised.
     """
@@ -252,15 +255,18 @@ class Database(six.with_metaclass(abc.ABCMeta, object)):
   ######### Methods to provide common functionality ###############
   #################################################################
 
-  def original_file_name(self, file):
+  def original_file_name(self, file, check_existence = True):
     """This function returns the original file name for the given File object.
 
     Keyword parameters:
 
-    file
+    file : :py:class:`File` or a derivative
       The File objects for which the file name should be retrieved
 
-    Return value:
+    check_existence : bool
+      Check if the original file exists?
+
+    Return value : str
       The original file name for the given File object
     """
     # check if directory is set
@@ -268,19 +274,22 @@ class Database(six.with_metaclass(abc.ABCMeta, object)):
       raise ValueError("The original_directory and/or the original_extension were not specified in the constructor.")
     # extract file name
     file_name = file.make_path(self.original_directory, self.original_extension)
-    if os.path.exists(file_name):
+    if not check_existence or os.path.exists(file_name):
       return file_name
     raise ValueError("The file '%s' was not found. Please check the original directory '%s' and extension '%s'?" % (file_name, self.original_directory, self.original_extension))
 
-  def original_file_names(self, files):
+  def original_file_names(self, files, check_existence = True):
     """This function returns the list of original file names for the given list of File objects.
 
     Keyword parameters:
 
-    files
+    files : [:py:class:`File`]
       The list of File objects for which the file names should be retrieved
 
-    Return value:
+    check_existence : bool
+      Check if the original files exists?
+
+    Return value : [str]
       The original file names for the given File objects, in the same order.
     """
 
@@ -292,16 +301,16 @@ class Database(six.with_metaclass(abc.ABCMeta, object)):
 
     Keyword parameters:
 
-    files
+    files : [:py:class:`File`]
       The list of File objects for which the file names should be retrieved
 
-    directory
+    directory : str
       The base directory where the files are stored
 
-    extension
+    extension : str
       The file name extension of the files
 
-    Return value:
+    Return value : [str]
       The file names for the given File objects, in the same order.
     """
     # extract file names
@@ -318,6 +327,7 @@ class Database(six.with_metaclass(abc.ABCMeta, object)):
     For possible keyword arguments, please check the implementation of the derived class Database.objects() function."""
     return self.uniquify(self.objects(protocol=protocol, groups='world', **kwargs))
 
+  @setastest(False)
   def test_files(self, protocol = None, group = 'dev', **kwargs):
     """Returns the list of all test File objects of the given group that satisfy your query.
     Test objects are all File objects that serve either for enrollment or probing.
@@ -361,10 +371,10 @@ class SQLiteDatabase(Database):
 
     Keyword parameters:
 
-    sqlite_file
+    sqlite_file : str
       The file name (including full path) of the SQLite file to read or generate.
 
-    file_class
+    file_class : a class instance
       The ``File`` class, which needs to be derived from :py:class:`bob.db.verification.utils.File`.
       This is required to be able to :py:func:`query` the databases later on.
 
@@ -375,8 +385,8 @@ class SQLiteDatabase(Database):
     if not os.path.exists(sqlite_file):
       self.m_session = None
     else:
-      import bob.db.utils
-      self.m_session = bob.db.utils.session_try_readonly('sqlite', sqlite_file)
+      import bob.db.base.utils
+      self.m_session = bob.db.base.utils.session_try_readonly('sqlite', sqlite_file)
     # call base class constructor
     Database.__init__(self, **kwargs)
     # also set the File class that is used (needed for a query)
@@ -412,24 +422,24 @@ class SQLiteDatabase(Database):
     self.assert_validity()
     return self.m_session.query(*args)
 
-  def paths(self, ids, prefix=None, suffix=None, preserve_order = True):
+  def paths(self, ids, prefix = None, suffix = None, preserve_order = True):
     """Returns a full file paths considering particular file ids, a given
     directory and an extension
 
     Keyword Parameters:
 
-    id
+    ids : [various type]
       The ids of the object in the database table "file". This object should be
       a python iterable (such as a tuple or list).
 
-    prefix
+    prefix : str or None
       The bit of path to be prepended to the filename stem
 
-    suffix
+    suffix : str or None
       The extension determines the suffix that will be appended to the filename
       stem.
 
-    preserve_order
+    preserve_order : bool
       If True (the default) the order of elements is preserved, but the
       execution time increases.
 
@@ -452,11 +462,11 @@ class SQLiteDatabase(Database):
 
     Keyword Parameters:
 
-    paths
+    paths : [str]
       The filename stems to query for. This object should be a python
       iterable (such as a tuple or list)
 
-    preserve_order
+    preserve_order : True
       If True (the default) the order of elements is preserved, but the
       execution time increases.
 
@@ -505,11 +515,11 @@ class ZTDatabase(Database):
 
     Keyword parameters:
 
-    groups
+    groups : str or [str]
       The groups of which the model ids should be returned.
       Usually, groups are one or more elements of ('dev', 'eval')
 
-    protocol
+    protocol : str
       The protocol for which the model ids should be retrieved.
       The protocol is dependent on your database.
       If you do not have protocols defined, just ignore this field.
@@ -522,16 +532,16 @@ class ZTDatabase(Database):
 
     Keyword parameters:
 
-    groups
+    groups : str or [str]
       The groups of which the model ids should be returned.
       Usually, groups are one or more elements of ('dev', 'eval')
 
-    protocol
+    protocol : str
       The protocol for which the model ids should be retrieved.
       The protocol is dependent on your database.
       If you do not have protocols defined, just ignore this field.
 
-    model_ids
+    model_ids : [various type]
       The model ids for which the File objects should be retrieved.
       What defines a 'model id' is dependent on the database.
       In cases, where there is only one model per client, model ids and client ids are identical.
@@ -546,11 +556,11 @@ class ZTDatabase(Database):
 
     Keyword parameters:
 
-    groups
+    groups : str or [str]
       The groups of which the model ids should be returned.
       Usually, groups are one or more elements of ('dev', 'eval')
 
-    protocol
+    protocol : str
       The protocol for which the model ids should be retrieved.
       The protocol is dependent on your database.
       If you do not have protocols defined, just ignore this field.
@@ -563,13 +573,13 @@ class ZTDatabase(Database):
     For possible keyword arguments, please check the implementation of the derived class Database.objects() function."""
     return self.uniquify(self.tmodel_ids(protocol=protocol, groups=group, **kwargs))
 
-  def t_enroll_files(self, protocol, model_id, group = 'dev'):
+  def t_enroll_files(self, protocol, model_id, group = 'dev', **kwargs):
     """Returns the list of T-Norm model enrollment File objects from the given model id of the given protocol for the given group that satisfy your query.
     For possible keyword arguments, please check the implementation of the derived class Database.objects() function."""
     return self.uniquify(self.tobjects(protocol=protocol, groups=group, model_ids=(model_id,), **kwargs))
 
-  def z_probe_files(self, protocol, model_id, group = 'dev'):
+  def z_probe_files(self, protocol, group = 'dev', **kwargs):
     """Returns the list of Z-Norm probe File objects to probe the model with the given model id of the given protocol for the given group that satisfy your query.
     For possible keyword arguments, please check the implementation of the derived class Database.objects() function."""
-    return self.uniquify(self.zobjects(protocol=protocol, groups=group, model_ids=(model_id,), purposes='probe', **kwargs))
+    return self.uniquify(self.zobjects(protocol=protocol, groups=group, **kwargs))
 

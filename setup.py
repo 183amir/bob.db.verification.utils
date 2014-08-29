@@ -68,6 +68,7 @@ setup(
     install_requires=[
       'setuptools',
       'six', # py2/3 compatibility library
+      'sqlalchemy',
       'bob.core',
       'bob.io.base',
       'bob.db.base',

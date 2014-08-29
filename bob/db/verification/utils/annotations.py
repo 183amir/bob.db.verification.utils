@@ -18,6 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import bob.core
 import logging
 logger = logging.getLogger("bob")
 
@@ -51,11 +52,18 @@ def read_annotation_file(file_name, annotation_type):
   """This function provides default functionality to read annotation files.
   It returns a dictionary with the keypoint name as key and the position (y,x) as value, and maybe some additional annotations.
 
-  The following annotation_types are supported:
+  Keyword Parameters:
 
-  * 'eyecenter': The file contains a single row with four entries: 're_x re_y le_x le_y'
-  * 'named': The file contains named annotations, one per line, e.g.: 'reye re_x re_y'
-  * 'idiap': The file contains enumerated annotations, one per line, e.g.: '1 key1_x key1_y', and maybe some additional annotations like gender, age, ...
+  file_name : str
+    The full path of the annotation file to read
+
+  annotation_type : str
+    The type of the annotation file that should be read.
+    The following annotation_types are supported:
+
+    * 'eyecenter': The file contains a single row with four entries: 're_x re_y le_x le_y'
+    * 'named': The file contains named annotations, one per line, e.g.: 'reye re_x re_y'
+    * 'idiap': The file contains enumerated annotations, one per line, e.g.: '1 key1_x key1_y', and maybe some additional annotations like gender, age, ...
   """
 
   if not file_name:
