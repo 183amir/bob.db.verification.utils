@@ -407,6 +407,8 @@ class SQLiteDatabase(Database):
       except TypeError:
         # ... I can just ignore the according exception...
         pass
+      except AttributeError:
+        pass
 
   def is_valid(self):
     """Returns if a valid session has been opened for reading the database."""
