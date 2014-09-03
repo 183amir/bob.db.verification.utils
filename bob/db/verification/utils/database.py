@@ -417,7 +417,7 @@ class SQLiteDatabase(Database):
   def assert_validity(self):
     """Raise a RuntimeError if the database back-end is not available."""
     if not self.is_valid():
-      raise RuntimeError("Database of type 'sqlite' cannot be found at expected location '%s'." % self.m_sqlite_file)
+      raise IOError("Database of type 'sqlite' cannot be found at expected location '%s'." % self.m_sqlite_file)
 
   def query(self, *args):
     """Creates a query to the database using the given arguments."""
