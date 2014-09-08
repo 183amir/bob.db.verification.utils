@@ -294,7 +294,7 @@ class Database(six.with_metaclass(abc.ABCMeta, object)):
     """
 
     # extract file names
-    return [self.original_file_name(f) for f in files]
+    return [self.original_file_name(f, check_existence) for f in files]
 
   def file_names(self, files, directory, extension):
     """This function returns the list of original file names for the given list of File objects.
