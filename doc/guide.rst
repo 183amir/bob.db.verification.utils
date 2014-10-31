@@ -139,7 +139,7 @@ All other keyword arguments (i.e., ``original_directory`` and ``original_extensi
 The most important function in this class is :py:meth:`bob.db.verification.utils.SQLiteDatabase.query`, which is heavily used in derived classes to query objects from the local SQL database file.
 Commonly, such a query looks somewhat like:
 
-.. code_block:: py
+.. code-block:: py
 
    self.query(File).join(...).filter().order_by(...)
 

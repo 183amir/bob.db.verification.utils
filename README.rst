@@ -21,7 +21,7 @@
  Utilities for Verification Databases in Bob
 =============================================
 
-This python module provides a basic common interface for (face, speaker, finger-vein, ...) verification databases in `Bob <http://www.idiap.ch/software/bob/>`_.
+This python module provides a basic common interface for (face, speaker, finger-vein, ...) verification databases in Bob_.
 Several other Bob database interfaces are derived from this package.
 
 Installation
