@@ -18,6 +18,7 @@ Documentation
    :maxdepth: 2
 
    guide
+   extend
    py_api
 
 Indices and tables

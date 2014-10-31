@@ -23,6 +23,8 @@ import six
 # Nose is detecting a function as a test function, while it is not...
 from numpy.testing.decorators import setastest
 
+from .file import File
+
 
 class Database(six.with_metaclass(abc.ABCMeta, object)):
   """Abstract base class that defines the minimum required API for querying verification databases."""
@@ -51,7 +53,7 @@ class Database(six.with_metaclass(abc.ABCMeta, object)):
       # test if the parameters of the functions apply
       self.model_ids(groups=test_value, protocol=test_value)
       self.objects(groups=test_value, protocol=test_value, purposes=test_value, model_ids=(test_value,))
-      self.annotations(file_id=test_value)
+      self.annotations(file=File(test_value, test_value, test_value))
     except TypeError as e:
       # type error indicates that the given parameters are not valid.
       raise NotImplementedError(str(e) + "\nPlease implement:\n - the model_ids(...) function with at least the arguments 'groups' and 'protocol'\n - the objects(...) function with at least the arguments 'groups', 'protocol', 'purposes' and 'model_ids'\n - the annotations() function with at least the arguments 'file_id'.")
@@ -111,7 +113,7 @@ class Database(six.with_metaclass(abc.ABCMeta, object)):
 
     purposes : str or [str]
       The purposes for which File objects should be retrieved.
-      Usually, purposes are one of ('enrol', 'probe').
+      Usually, purposes are one of ('enroll', 'probe').
 
     model_ids : [various type]
       The model ids for which the File objects should be retrieved.
@@ -123,18 +125,19 @@ class Database(six.with_metaclass(abc.ABCMeta, object)):
     raise NotImplementedError("This function must be implemented in your derived class.")
 
 
-  def annotations(self, file_id):
+  def annotations(self, file):
     """This function returns the annotations for the given file id as a dictionary.
 
     Keyword parameters:
 
-    file_id : various type
-      The ID of the File object you want to retrieve the annotations for,
+    file : :py:class:`bob.db.verification.utils.File` or one of its derivatives
+      The File object you want to retrieve the annotations for,
 
     Return value:
-      A dictionary of annotations, usually something like {'leye':(le_y,le_x), 'reye':(re_y,re_x), ...},
+      A dictionary of annotations, for face images usually something like {'leye':(le_y,le_x), 'reye':(re_y,re_x), ...},
       or None if there are no annotations for the given file ID (which is the case in this base class implementation).
     """
+    assert isinstance(file, File)
     return None
 
 
@@ -344,9 +347,9 @@ class Database(six.with_metaclass(abc.ABCMeta, object)):
     If the model_id is None (the default), enrollment files for all models are returned.
     For possible keyword arguments, please check the implementation of the derived class Database.objects() function."""
     if model_id:
-      return self.uniquify(self.objects(protocol=protocol, groups=group, model_ids=(model_id,), purposes='enrol', **kwargs))
+      return self.uniquify(self.objects(protocol=protocol, groups=group, model_ids=(model_id,), purposes='enroll', **kwargs))
     else:
-      return self.uniquify(self.objects(protocol=protocol, groups=group, purposes='enrol', **kwargs))
+      return self.uniquify(self.objects(protocol=protocol, groups=group, purposes='enroll', **kwargs))
 
   def probe_files(self, protocol = None, model_id = None, group = 'dev', **kwargs):
     """Returns the list of probe File objects to probe the model with the given model id of the given protocol for the given group that satisfy your query.
@@ -357,12 +360,18 @@ class Database(six.with_metaclass(abc.ABCMeta, object)):
     else:
       return self.uniquify(self.objects(protocol=protocol, groups=group, purposes='probe', **kwargs))
 
+  def get_client_id_from_model_id(self, model_id, **kwargs):
+    """Return the client id associated with the given model id.
+    In this base class implementation, it is assumed that only one model is enrolled for each client and, thus, client id and model id are identical.
+    All key word arguments are ignored.
+    Please override this function in derived class implementations to change this behavior."""
+    return model_id
 
 
 class SQLiteDatabase(Database):
   """This class can be used for handling SQL databases.
   It opens an SQL database in a read-only mode and keeps it opened during the whole session.
-  Since this class is based on the :py:class:`Database` class, it is abstract and you have to implement the abstract methods of that class."""
+  Since this class is based on the :py:class:`bob.db.verification.utils.Database` class, it is abstract and you have to implement the abstract methods of that class."""
 
   def __init__(self, sqlite_file, file_class, **kwargs):
     """**Contructor Documentation**
@@ -376,7 +385,7 @@ class SQLiteDatabase(Database):
 
     file_class : a class instance
       The ``File`` class, which needs to be derived from :py:class:`bob.db.verification.utils.File`.
-      This is required to be able to :py:func:`query` the databases later on.
+      This is required to be able to :py:meth:`query` the databases later on.
 
     Other keyword arguments passed to the :py:class:`bob.db.verification.utils.Database` constructor.
     """

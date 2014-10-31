@@ -71,8 +71,9 @@ class TestDatabase (bob.db.verification.utils.ZTDatabase, bob.db.verification.ut
     return self.objects()
   def zobjects(self, groups=None, protocol=None):
     return self.objects()
-
-
+  def annotations(self, file):
+    assert isinstance(file, TestFile)
+    return {'key' : (42, 180)}
 
 
 
@@ -127,6 +128,11 @@ def test02_database():
   file = db.objects()[0]
   assert db.original_file_name(file, check_existence=False) == "original/directory/test/path.orig"
   assert db.file_names([file], "another/directory", ".other")[0] == "another/directory/test/path.other"
+
+  annots = db.annotations(file)
+  assert len(annots) == 1
+  assert 'key' in annots.keys()
+  assert (42, 180) in annots.values()
 
   # try file save
   temp_dir = tempfile.mkdtemp(prefix="bob_db_test_")

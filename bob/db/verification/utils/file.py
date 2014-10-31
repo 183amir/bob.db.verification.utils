@@ -49,10 +49,13 @@ class File(object):
 
     # just copy the information
     self.client_id = client_id
+    """The id of the client that belongs to this file."""
     self.path = path
+    """The relative path including the file name, but excluding the file name extension"""
     # set file id only, when specified
     if file_id:
       self.id = file_id
+      """A unique identifier of the file."""
     else:
       # check that the file id at least exists
       if not hasattr(self, 'id'):
