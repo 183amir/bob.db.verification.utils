@@ -146,7 +146,7 @@ Commonly, such a query looks somewhat like:
 to retrieve a list (in fact, an *iterator*) of File objects that fulfill your requirements.
 Internally, it will first check that the database :py:meth:`bob.db.verification.utils.SQLiteDatabase.is_valid`, i.e., that the local SQL database file exists and a session is opened for reading.
 
-Two additional methods :py:meth:`bob.db.verification.utils.SQLiteDatabase.paths` and :py:meth:`bob.db.verification.utils.SQLiteDatabase.reverse` exist in this database interface.
+Three additional methods :py:meth:`bob.db.verification.utils.SQLiteDatabase.files`, :py:meth:`bob.db.verification.utils.SQLiteDatabase.paths` and :py:meth:`bob.db.verification.utils.SQLiteDatabase.reverse` exist in this database interface.
 Both are mainly used in the command line interface of the databases, using the ``./bin/bob_dbmanage.py`` command set up in the :py:class:`bob.db.base.driver.Interface`.
 
 

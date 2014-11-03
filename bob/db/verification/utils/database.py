@@ -433,6 +433,30 @@ class SQLiteDatabase(Database):
     self.assert_validity()
     return self.m_session.query(*args)
 
+  def files(self, ids, preserve_order = True):
+    """Returns a list of ``File`` objects with the given file ids
+
+    Keyword Parameters:
+
+    ids : [various type]
+      The ids of the object in the database table "file".
+      This object should be a python iterable (such as a tuple or list).
+
+    preserve_order : bool
+      If True (the default) the order of elements is preserved, but the
+      execution time increases.
+
+    Returns a list (that may be empty) of ``File`` objects.
+    """
+    file_objects = self.query(self.m_file_class).filter(self.m_file_class.id.in_(ids))
+    if not preserve_order:
+      return list(file_objects)
+    else:
+      # path_dict = {f.id : f.make_path(prefix, suffix) for f in file_objects}  <<-- works fine with python 2.7, but not in 2.6
+      path_dict = {}
+      for f in file_objects: path_dict[f.id] = f
+      return [path_dict[id] for id in ids]
+
   def paths(self, ids, prefix = None, suffix = None, preserve_order = True):
     """Returns a full file paths considering particular file ids, a given
     directory and an extension
@@ -458,14 +482,8 @@ class SQLiteDatabase(Database):
     file ids.
     """
 
-    file_objects = self.query(self.m_file_class).filter(self.m_file_class.id.in_(ids))
-    if not preserve_order:
-      return [f.make_path(prefix, suffix) for f in file_objects]
-    else:
-      # path_dict = {f.id : f.make_path(prefix, suffix) for f in file_objects}  <<-- works fine with python 2.7, but not in 2.6
-      path_dict = {}
-      for f in file_objects: path_dict[f.id] = f.make_path(prefix, suffix)
-      return [path_dict[id] for id in ids]
+    file_objects = self.files(ids, preserve_order)
+    return [f.make_path(prefix, suffix) for f in file_objects]
 
   def reverse(self, paths, preserve_order = True):
     """Reverses the lookup: from certain paths, return a list of

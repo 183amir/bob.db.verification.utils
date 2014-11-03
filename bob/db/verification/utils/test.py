@@ -117,6 +117,8 @@ def test02_database():
   check_file(db.probe_files())
   check_file(db.t_enroll_files(None,5))
   check_file(db.z_probe_files(None,5))
+  check_file(db.files([1]))
+  check_file(db.reverse(["test/path"]))
 
   model_ids = db.model_ids()
   assert len(model_ids) == 1
@@ -128,6 +130,7 @@ def test02_database():
   file = db.objects()[0]
   assert db.original_file_name(file, check_existence=False) == "original/directory/test/path.orig"
   assert db.file_names([file], "another/directory", ".other")[0] == "another/directory/test/path.other"
+  assert db.paths([1], "another/directory", ".other")[0] == "another/directory/test/path.other"
 
   annots = db.annotations(file)
   assert len(annots) == 1
