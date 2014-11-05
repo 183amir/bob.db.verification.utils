@@ -20,6 +20,7 @@ Documentation
    :maxdepth: 2
 
    guide
+   implemented
    extend
    py_api
 
