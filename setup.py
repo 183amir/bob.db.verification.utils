@@ -5,6 +5,9 @@
 
 from setuptools import setup, find_packages
 
+# Define package version
+version = open("version.txt").read().rstrip()
+
 # The only thing we do in this file is to call the setup() function with all
 # parameters that define our package.
 setup(
@@ -12,7 +15,7 @@ setup(
     # This is the basic information about your project. Modify all this
     # information before releasing code publicly.
     name='bob.db.verification.utils',
-    version='2.0.0a0',
+    version=version,
     description='Utilities for bob.db verification databases',
 
     url='http://pypi.python.org/pypi/bob.db.verification.utils',
