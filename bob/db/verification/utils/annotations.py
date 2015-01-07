@@ -110,6 +110,9 @@ def read_annotation_file(file_name, annotation_type):
       if 'leyeo' in annotations and 'leyei' in annotations:
         annotations['leye'] = ((annotations['leyeo'][0] + annotations['leyei'][0])/2., (annotations['leyeo'][1] + annotations['leyei'][1])/2.)
 
+    else:
+      raise ValueError("The given annotation type '%s' is not known, choose one of ('eyecenter', 'named', 'idiap')" % annotation_type)
+
   if 'leye' in annotations and 'reye' in annotations and annotations['leye'][1] < annotations['reye'][1]:
     logger.warn("The eye annotations in file '%s' might be exchanged!" % file_name)
 
