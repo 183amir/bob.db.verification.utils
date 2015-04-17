@@ -162,7 +162,7 @@ class Database(six.with_metaclass(abc.ABCMeta, object)):
       Also other objects can be handled, as long as they are sortable.
 
     Returns
-      A sorted copy of the given list with the duplicated removed.
+      A sorted copy of the given ``file_list`` with the duplicates removed.
     """
     return sorted(list(set(file_list)))
 
@@ -322,25 +322,25 @@ class Database(six.with_metaclass(abc.ABCMeta, object)):
 
   def all_files(self, **kwargs):
     """Returns the list of all File objects that satisfy your query.
-    For possible keyword arguments, please check the implementation of the derived class Database.objects() function."""
+    For possible keyword arguments, please check the :py:meth:`objects` function."""
     return self.uniquify(self.objects(**kwargs))
 
   def training_files(self, protocol = None, **kwargs):
     """Returns the list of all training (world) File objects that satisfy your query.
-    For possible keyword arguments, please check the implementation of the derived class Database.objects() function."""
+    For possible keyword arguments, please check the :py:meth:`objects` function."""
     return self.uniquify(self.objects(protocol=protocol, groups='world', **kwargs))
 
   @setastest(False)
   def test_files(self, protocol = None, groups = 'dev', **kwargs):
     """Returns the list of all test File objects of the given groups that satisfy your query.
     Test objects are all File objects that serve either for enrollment or probing.
-    For possible keyword arguments, please check the implementation of the derived class Database.objects() function."""
+    For possible keyword arguments, please check the :py:meth:`objects` function."""
     return self.uniquify(self.objects(protocol=protocol, groups=groups, **kwargs))
 
   def enroll_files(self, protocol = None, model_id = None, groups = 'dev', **kwargs):
     """Returns the list of enrollment File objects from the given model id of the given protocol for the given groups that satisfy your query.
     If the model_id is None (the default), enrollment files for all models are returned.
-    For possible keyword arguments, please check the implementation of the derived class Database.objects() function."""
+    For possible keyword arguments, please check the :py:meth:`objects` function."""
     if model_id:
       return self.uniquify(self.objects(protocol=protocol, groups=groups, model_ids=(model_id,), purposes='enroll', **kwargs))
     else:
@@ -349,7 +349,7 @@ class Database(six.with_metaclass(abc.ABCMeta, object)):
   def probe_files(self, protocol = None, model_id = None, groups = 'dev', **kwargs):
     """Returns the list of probe File objects to probe the model with the given model id of the given protocol for the given groups that satisfy your query.
     If the model_id is None (the default), all possible probe files are returned.
-    For possible keyword arguments, please check the implementation of the derived class Database.objects() function."""
+    For possible keyword arguments, please check the :py:meth:`objects` function."""
     if model_id is not None:
       return self.uniquify(self.objects(protocol=protocol, groups=groups, model_ids=(model_id,), purposes='probe', **kwargs))
     else:
@@ -594,16 +594,15 @@ class ZTDatabase(Database):
 
   def t_model_ids(self, protocol, groups = 'dev', **kwargs):
     """Returns the list of model ids used for T-Norm of the given protocol for the given group that satisfy your query.
-    For possible keyword arguments, please check the implementation of the derived class Database.objects() function."""
+    For possible keyword arguments, please check the :py:meth:`tmodel_ids` function."""
     return self.uniquify(self.tmodel_ids(protocol=protocol, groups=groups, **kwargs))
 
   def t_enroll_files(self, protocol, model_id, groups = 'dev', **kwargs):
     """Returns the list of T-Norm model enrollment File objects from the given model id of the given protocol for the given group that satisfy your query.
-    For possible keyword arguments, please check the implementation of the derived class Database.objects() function."""
+    For possible keyword arguments, please check the :py:meth:`tobjects` function."""
     return self.uniquify(self.tobjects(protocol=protocol, groups=groups, model_ids=(model_id,), **kwargs))
 
   def z_probe_files(self, protocol, groups = 'dev', **kwargs):
     """Returns the list of Z-Norm probe File objects to probe the model with the given model id of the given protocol for the given group that satisfy your query.
-    For possible keyword arguments, please check the implementation of the derived class Database.objects() function."""
+    For possible keyword arguments, please check the :py:meth:`zobjects` function."""
     return self.uniquify(self.zobjects(protocol=protocol, groups=groups, **kwargs))
-
