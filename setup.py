@@ -3,7 +3,11 @@
 # @author: Manuel Guenther <Manuel.Guenther@idiap.ch>
 # @date:   Thu Dec  6 12:28:25 CET 2012
 
-from setuptools import setup, find_packages
+from setuptools import setup, find_packages, dist
+dist.Distribution(dict(setup_requires=['bob.extension']))
+
+from bob.extension.utils import load_requirements
+install_requires = load_requirements()
 
 # Define package version
 version = open("version.txt").read().rstrip()
@@ -37,14 +41,7 @@ setup(
     # on the current system will be installed locally and only visible to the
     # scripts of this package. Don't worry - You won't need adminstrative
     # privileges when using buildout.
-    install_requires=[
-      'setuptools',
-      'six', # py2/3 compatibility library
-      'sqlalchemy',
-      'bob.core',
-      'bob.io.base',
-      'bob.db.base',
-    ],
+    install_requires=install_requires,
 
     # Our database packages are good examples of namespace implementations
     # using several layers. You can check them out here:
