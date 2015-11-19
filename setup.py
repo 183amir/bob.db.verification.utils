@@ -46,11 +46,7 @@ setup(
     # Our database packages are good examples of namespace implementations
     # using several layers. You can check them out here:
     # https://github.com/idiap/bob/wiki/Satellite-Packages
-    namespace_packages = [
-      'bob',
-      'bob.db',
-      'bob.db.verification'
-    ],
+
 
     entry_points={
     },
