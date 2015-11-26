@@ -6,7 +6,7 @@
    :target: http://pythonhosted.org/bob.db.verification.utils/index.html
 .. image:: http://img.shields.io/badge/docs-latest-orange.png
    :target: https://www.idiap.ch/software/bob/docs/latest/bioidiap/bob.db.verification.utils/master/index.html
-.. image:: http://travis-ci.org/bioidiap/bob.db.verification.utils.svg?branch=master
+.. image:: http://travis-ci.org/bioidiap/bob.db.verification.utils.svg?branch=v2.0.3
    :target: https://travis-ci.org/bioidiap/bob.db.verification.utils
 .. image:: https://coveralls.io/repos/bioidiap/bob.db.verification.utils/badge.png
    :target: https://coveralls.io/r/bioidiap/bob.db.verification.utils
