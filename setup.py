@@ -22,7 +22,7 @@ setup(
     version=version,
     description='Utilities for bob.db verification databases',
 
-    url='http://pypi.python.org/pypi/bob.db.verification.utils',
+    url='http://github.com/bioidiap/bob.db.verification.utils',
     license='GPLv3',
     author='Manuel Guenther',
     author_email='manuel.guenther@idiap.ch',
